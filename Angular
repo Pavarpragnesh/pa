@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html ng-app="studentApp">
+  <head>
+    <title>Student Table</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  </head>
+  <body>
+    <div ng-controller="studentCtrl">
+      <h1>Upload and Display Student Data</h1>
+
+      <!-- File Input -->
+      <input
+        type="file"
+        accept=".csv"
+        ng-model="file"
+        onchange="angular.element(this).scope().setFile(this.files)"
+      />
+      <button ng-click="submitFile()">Submit</button>
+
+      <!-- Table Display -->
+      <h2>Student Table:</h2>
+      <table border="1" ng-if="students.length">
+        <thead>
+          <tr>
+            <th>Serial Number</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="student in students">
+            <td>{{ $index + 1 }}</td>
+            <td>{{ student.Name }}</td>
+            <td>{{ student.Age }}</td>
+            <td>{{ student.Email }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
+
+
+
+// Define the AngularJS module
+angular.module("studentApp", []).controller("studentCtrl", function ($scope) {
+  $scope.file = null; // Holds the selected file
+  $scope.students = []; // Holds the parsed CSV data
+
+  // Set the file when the user selects it
+  $scope.setFile = function (files) {
+    $scope.file = files[0];
+  };
+
+  // Submit the file and process it
+  $scope.submitFile = function () {
+    if (!$scope.file) {
+      alert("Please select a file first!");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const fileContent = event.target.result;
+      Papa.parse(fileContent, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          $scope.$apply(() => {
+            // Filter results to include only Name and Age
+            $scope.students = results.data.map((student) => ({
+              Name: student.Name,
+              Age: student.Age,
+              Email: student.Email,
+            }));
+          });
+        },
+      });
+    };
+    reader.readAsText($scope.file);
+  };
+});
