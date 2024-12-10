@@ -1,0 +1,25 @@
+create_users.yml
+yaml
+Copy code
+---
+- name: Create multiple users
+  hosts: localhost
+  become: yes  # Ensures tasks are run with elevated privileges (if needed)
+  tasks:
+    - name: Create 10 users in a loop
+      user:
+        name: "user{{ item }}"
+        state: present
+      with_sequence: start=1 end=10
+Explanation:
+user Module: Used to manage user accounts in the system. Setting state: present ensures the user is created if it doesn’t already exist.
+with_sequence: Generates a sequence of numbers from start=1 to end=10, which is used to create usernames like user1, user2, ..., user10.
+become: yes: Ensures the script has the necessary privileges to create users (e.g., root access).
+Running the script:
+Save it to a file, e.g., create_users.yml, and run it with Ansible:
+
+bash
+Copy code
+ansible-playbook create_users.yml
+Result:
+This will create users named user1, user2, ..., user10 on the target system. Adjust start and end in the with_sequence loop if you need a different range.
