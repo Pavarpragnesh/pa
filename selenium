@@ -1,0 +1,34 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+# Initialize the WebDriver (make sure to download the driver for your browser)
+driver = webdriver.Chrome()  # Or use webdriver.Firefox(), etc.
+
+# Navigate to the URL where your React app is running
+driver.get("http://localhost:3000")  # Update this URL as needed
+
+# Find the input fields and button
+try:
+    # Locate the 'Name' input field
+    name_input = driver.find_element(By.XPATH, "//input[@placeholder='Name']")
+    name_input.send_keys("John Doe")
+
+    # Locate the 'Age' input field
+    age_input = driver.find_element(By.XPATH, "//input[@placeholder='Age']")
+    age_input.send_keys("25")
+
+    # Locate the 'Grade' input field
+    grade_input = driver.find_element(By.XPATH, "//input[@placeholder='Grade']")
+    grade_input.send_keys("A")
+
+    # Locate the 'Add' button and click it
+    add_button = driver.find_element(By.XPATH, "//button[text()='Add']")
+    add_button.click()
+
+    print("Student added successfully.")
+except Exception as e:
+    print(f"An error occurred: {e}")
+
+# Optional: Close the browser after completing the operation
+driver.quit()
