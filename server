@@ -1,0 +1,51 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+const app = express();
+
+// Middleware
+app.use(bodyParser.json());
+app.use(cors());
+
+// MongoDB Connection
+const uri = "mongodb://localhost:27017/pavar"; // Replace with your URI
+mongoose
+  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.error(err));
+
+// Student Schema and Model
+const studentSchema = new mongoose.Schema(
+  {
+    name: String,
+    age: Number,
+    grade: String,
+  },
+  { timestamps: true }
+);
+
+const Student = mongoose.model("Student", studentSchema);
+
+// Routes
+app.get("/students", async (req, res) => {
+  try {
+    const students = await Student.find();
+    res.json(students);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+app.post("/students", async (req, res) => {
+  try {
+    const student = new Student(req.body);
+    await student.save();
+    res.status(201).json(student);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+app.listen(5000, () => console.log("Server running on port 5000"));
